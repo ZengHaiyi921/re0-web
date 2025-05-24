@@ -13,7 +13,7 @@ from common.utils import *
 from common.trans import *
 from translate import translate
 from crawler import crawler
-from format import *
+from format import format_file
 from index import update_index
 from color_log.clog import log
 

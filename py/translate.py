@@ -7,6 +7,7 @@
 import argparse
 from common.utils import *
 from common.trans import *
+from format import format_dir, format_file
 from transgpt.translate import *
 from common.settings import *
 from color_log.clog import log
@@ -23,6 +24,7 @@ def args() :
     parser.add_argument('-k', '--api_key', dest='api_key', type=str, default="", help='腾讯翻译 API KEY')
     parser.add_argument('-g', '--gpt_key', dest='gpt_key', type=str, default="", help='ChatGPT KEY')
     parser.add_argument('-t', '--trans_path', dest='trans_path', type=str, default="", help='待翻译的文件路径')
+    parser.add_argument('-d', '--trans_dir', dest='trans_dir', type=str, default="", help='待翻译的目录路径')
     parser.add_argument('-s', '--host', dest='host', type=str, default="127.0.0.1", help='HTTP 代理 IP')
     parser.add_argument('-p', '--port', dest='port', type=int, default=0, help='HTTP 代理端口')
     return parser.parse_args()
@@ -30,8 +32,29 @@ def args() :
 
 
 def main(args) :
-    translate(args, args.trans_path)
+    # 翻译单个文件
+    if args.trans_path:
+        translate(args, args.trans_path)
+        format_file(args.trans_path)
 
+    # 翻译目录
+    elif args.trans_dir:
+        trans_dir(args, args.trans_dir)
+        format_dir(args.trans_dir)
+
+
+
+def trans_dir(args, dirpath) :
+    for root, dirs, names in os.walk(dirpath):
+        for name in names:
+            if not name.endswith(".md") :
+                continue
+            
+            if name == "README.md":
+                continue
+
+            filepath = os.path.join(root, name)
+            translate(args, filepath)
 
 
 def translate(args, filepath) :
@@ -53,14 +76,14 @@ def translate(args, filepath) :
                     platform=CHATGPT, api_id='', api_key=args.gpt_key, 
                     args={ 
                         ARG_OPENAI_MODEL: CHATGPT_4o, 
-                        ARG_ROLE: "基于《从零开始的异世界生活》小说的背景，把日文章节标题翻译成中文，并润色。禁止回复与翻译文本无关的内容。"
+                        ARG_ROLE: "你是《从零开始的异世界生活》小说的中文翻译官。你的任务是将提供的日文章节标题翻译成流畅、自然、富有小说风格的中文。严格遵守以下要求：仅返回润色后的中文译文；禁止增加任何与原文无关的内容；禁止解释、备注或评论。"
                     }
     )
     content = trans(content, 
                     platform=CHATGPT, api_id='', api_key=args.gpt_key, 
                     args={ 
                         ARG_OPENAI_MODEL: CHATGPT_4o, 
-                        ARG_ROLE: "基于《从零开始的异世界生活》小说的背景，把日文内容翻译成中文，并润色。禁止回复与翻译文本无关的内容。"
+                        ARG_ROLE: "你是《从零开始的异世界生活》小说的中文翻译官。你的任务是将提供的日文内容翻译成流畅、自然、富有小说风格的中文。严格遵守以下要求：仅返回润色后的中文译文；禁止增加任何与原文无关的内容；禁止解释、备注或评论。"
                     }
     )
     content = re.sub(r'^"', '「', content, flags=re.MULTILINE)

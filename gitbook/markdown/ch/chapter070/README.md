@@ -118,4 +118,4 @@
 - [110　『庆典』](110.html)
 
 
-![](/res/imgs/article/chapter070/00-B.jpg)
+![](/res/imgs/article/chapter070/00-b.jpg)

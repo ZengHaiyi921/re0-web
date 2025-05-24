@@ -52,7 +52,7 @@ def main(args) :
 
 def crawler(args) :
     all_save_paths = []
-    page = 7    # 已知当下最后一页是第 7 页，加速爬取 —— 20240126
+    page = 8    # 已知当下最后一页是第 8 页，加速爬取 —— 20250318
     while page > 0 :
         page, save_paths = crawler_page(args, page)
         all_save_paths.extend(save_paths)
@@ -63,10 +63,10 @@ def crawler(args) :
 def crawler_page(args, page) :
     save_paths = []
     html = http_request(args, HOME_URL, page)
-    grps = re.findall(r'a href="/n2267be/\?p=(\d+)" class="novelview_pager-next"', html)
+    grps = re.findall(r'a href="/n2267be/\?p=(\d+)" class="c-pager__item c-pager__item--before"', html)
     page = int(grps[1]) if grps else 0
     
-    grps = re.findall(r'<a href="(/n2267be/\d+/)">([^<]+)</a>', html)
+    grps = re.findall(r'<a href="(/n2267be/\d+/)" class="p-eplist__subtitle">([^<]+)</a>', html)
     for uri, title in grps :
         title = conver_full_char(title)
         save_path = save_page(args, uri, title)
@@ -77,30 +77,31 @@ def crawler_page(args, page) :
 
 
 # 全角转半角
-def conver_full_char(string) :
-    string = string.replace('０　　', '00　')
-    string = string.replace('１　　', '01　')
-    string = string.replace('２　　', '02　')
-    string = string.replace('３　　', '03　')
-    string = string.replace('４　　', '04　')
-    string = string.replace('５　　', '05　')
-    string = string.replace('６　　', '06　')
-    string = string.replace('７　　', '07　')
-    string = string.replace('８　　', '08　')
-    string = string.replace('９　　', '09　')
-    string = string.replace('０', '0')
-    string = string.replace('１', '1')
-    string = string.replace('２', '2')
-    string = string.replace('３', '3')
-    string = string.replace('４', '4')
-    string = string.replace('５', '5')
-    string = string.replace('６', '6')
-    string = string.replace('７', '7')
-    string = string.replace('８', '8')
-    string = string.replace('９', '9')
-    string = string.replace('Ａ', 'A')
-    string = string.replace('Ｂ', 'B')
-    return string
+def conver_full_char(text) :
+    text = text.strip()
+    text = text.replace('０　　', '00　')
+    text = text.replace('１　　', '01　')
+    text = text.replace('２　　', '02　')
+    text = text.replace('３　　', '03　')
+    text = text.replace('４　　', '04　')
+    text = text.replace('５　　', '05　')
+    text = text.replace('６　　', '06　')
+    text = text.replace('７　　', '07　')
+    text = text.replace('８　　', '08　')
+    text = text.replace('９　　', '09　')
+    text = text.replace('０', '0')
+    text = text.replace('１', '1')
+    text = text.replace('２', '2')
+    text = text.replace('３', '3')
+    text = text.replace('４', '4')
+    text = text.replace('５', '5')
+    text = text.replace('６', '6')
+    text = text.replace('７', '7')
+    text = text.replace('８', '8')
+    text = text.replace('９', '9')
+    text = text.replace('Ａ', 'A')
+    text = text.replace('Ｂ', 'B')
+    return text
 
 
 
